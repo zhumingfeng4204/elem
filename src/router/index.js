@@ -4,16 +4,53 @@ import VueRouter from "vue-router";
 Vue.use(VueRouter);
 
 const routes = [
+  // {
+  //   path: "/",
+  //   redirect: () => import("../vivews/login.vue")
+  // },
   {
     path: "/",
-    name: "index",
-    component: () => import("../vivews/index.vue")
+    // name: "index",
+    component: () => import("../vivews/index.vue"),
+    children: [
+      {
+        path: '',
+        redirect: '/home',
+      },
+      {
+        path: '/home',
+        name: 'home',
+        component: () => import("../vivews/home.vue")
+      },
+      {
+        path: '/me',
+        name: 'me',
+        component: () => import("../vivews/me.vue")
+      },
+      {
+        path: '/order',
+        name: 'order',
+        component: () => import("../vivews/order.vue")
+      },
+      {
+        path: '/address',
+        name: 'address',
+        component: () => import("../vivews/address.vue")
+      },
+      {
+        path: '/city',
+        name: 'city',
+        component: () => import("../vivews/city.vue")
+      }
+
+    ]
   },
   {
     path: "/login",
     name: "login",
     component: () => import("../vivews/login.vue")
-  }
+  },
+
   // {
   //   path: "/about",
   //   name: "About",

@@ -61,9 +61,17 @@ export default {
           phone: this.phone,
           code: this.verifycode
         })
-        .then(localStorage.setItem("ele_login", true), this.$router.push("/"))
+        .then(res => {
+          console.log(res);
+          // 检验成功 设置登录状态并且跳转到/
+          localStorage.setItem("ele_login", true);
+          this.$router.push("/");
+        })
         .catch(err => {
-          this.errors = { code: err.response.data.msg };
+          // 返回错误信息
+          this.errors = {
+            code: err.response.data.msg
+          };
         });
     },
     getverifycode() {
