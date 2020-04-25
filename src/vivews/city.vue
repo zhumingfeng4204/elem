@@ -5,22 +5,33 @@
         <i class="fa fa-search"></i>
         <input v-model="city_val" type="text" placeholder="输入城市名" />
       </div>
-      <span id="but" @click="$router.go(-1)">取消</span>
+      <span id="but" @click="$router.push({name:'address',params:{city:city}})">取消</span>
     </div>
-    <div>
+    <div style="height:100vh" v-if="searchlist.length==0">
       <div class="location">
-        <location :address="city"></location>
+        <location @click="selectcity({name:city})" :address="city"></location>
       </div>
+      <habet @selectcity="selectcity" :cityinfo="cityinfo" :keys="keys" ref="scrolled"></habet>
+    </div>
+    <div class="search_list" v-else>
+      <ul>
+        <li @click="selectcity(itme)" v-for="(itme,index) in searchlist" :key="index">{{itme.name}}</li>
+      </ul>
     </div>
   </div>
 </template>
 
 <script>
 import location from "../components/location";
+import habet from "../components/habet";
 export default {
   name: "",
   components: {
-    location
+    location,
+    habet
+  },
+  created() {
+    this.getcity();
   },
   computed: {
     city() {
@@ -32,10 +43,52 @@ export default {
   },
   data() {
     return {
-      city_val: ""
+      city_val: "",
+      cityinfo: null,
+      keys: [],
+      allCitys: [],
+      searchlist: []
     };
   },
-  methods: {}
+  watch: {
+    city_val() {
+      this.searchcity();
+    }
+  },
+  methods: {
+    getcity() {
+      this.$axios("/api/posts/cities")
+        .then(res => {
+          this.cityinfo = res.data;
+          this.keys = Object.keys(res.data);
+          this.keys.pop();
+          this.keys.sort();
+          this.$nextTick(() => {
+            this.$refs.scrolled.initscroll();
+          });
+          this.keys.forEach(key => {
+            this.cityinfo[key].forEach(city => {
+              this.allCitys.push(city);
+            });
+          });
+        })
+        .catch(err => {
+          console.log(err);
+        });
+    },
+    selectcity(city) {
+      this.$router.push({ name: "address", params: { city: city.name } });
+    },
+    searchcity() {
+      if (!this.city_val) {
+        this.searchlist = [];
+      } else {
+        this.searchlist = this.allCitys.filter(item => {
+          return item.name.indexOf(this.city_val) != -1;
+        });
+      }
+    }
+  }
 };
 </script>
 
@@ -57,7 +110,6 @@ export default {
   padding: 7px 16px;
   display: flex;
   justify-content: space-between;
-
 }
 .search {
   background-color: #eee;

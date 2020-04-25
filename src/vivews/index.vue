@@ -1,6 +1,8 @@
 <template>
-  <div class="index">
-    <router-view></router-view>
+  <div>
+    <div class="index">
+      <router-view></router-view>
+    </div>
     <tabbar :data="tabbarData"></tabbar>
   </div>
 </template>

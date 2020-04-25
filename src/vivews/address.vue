@@ -10,7 +10,7 @@
         <i class="fa fa-search"></i>
         <input type="text" v-model="search_val" placeholder="详细地址" />
       </div>
-      <loc :address="address"></loc>
+      <loc @click="selectadd" :address="address"></loc>
     </div>
     <div class="area">
       <ul class="area_list" v-for="(item,index) in citylist" :key="index">
@@ -71,10 +71,15 @@ export default {
       });
     },
     selectadd(item) {
-      this.$store.dispatch(
+      if (item) {
+        this.$store.dispatch(
         "setaddress",
         item.district + item.address + item.name
       );
+      } else {
+        this.$store.dispatch("setaddress",this.address)
+      }
+      
       this.$router.push("/home");
     }
   }
