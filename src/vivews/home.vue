@@ -6,28 +6,43 @@
         <span>{{address}}</span>
         <i class="fa fa-sort-desc"></i>
       </div>
-      <div class="search_wrap" @click="$router.push('/search')">
-        <!-- :class="{'fixedview':showFilter}" -->
+      <div class="search_wrap" :class="{'fixedview':showfilter}" @click="$router.push('/search')">
         <div class="shop_search">
           <i class="fa fa-search"></i>
           搜索商家 商家名称
         </div>
       </div>
-      <!-- <div id="container" style="height:2000px">
-        <mt-swipe :auto="4000">
-          <mt-swipe-item>1</mt-swipe-item>
-          <mt-swipe-item>2</mt-swipe-item>
-          <mt-swipe-item>3</mt-swipe-item>
-        </mt-swipe>
-      </div>-->
     </div>
+    <div id="container">
+      <mt-swipe :auto="4000" class="swiper">
+        <mt-swipe-item v-for="(img,index) in sweipeimg" :key="index">
+          <img :src="img" />
+        </mt-swipe-item>
+      </mt-swipe>
+      <mt-swipe :auto="0" class="entries">
+        <mt-swipe-item v-for="(entri,i) in entries" :key="i" class="entri_warp">
+          <div class="foodentry" v-for="(item,index) in entri" :key="index">
+            <div class="img_wrap">
+              <img :src="item.image" />
+            </div>
+            <span>{{item.name}}</span>
+          </div>
+        </mt-swipe-item>
+      </mt-swipe>
+    </div>
+    <div class="shoplist-title">推荐商家</div>
+    <filterv :filterdata="filterdata" @searchfixed="showfilterv" @updata="updata"></filterv>
   </div>
 </template>
 
 <script>
 import { Swipe, SwipeItem } from "mint-ui";
+import filterv from "../components/filterv";
 export default {
   name: "home",
+  components: {
+    filterv
+  },
   computed: {
     address() {
       return this.$store.getters.address;
@@ -41,7 +56,10 @@ export default {
   },
   data() {
     return {
-      seipeimg: []
+      sweipeimg: [],
+      entries: [],
+      filterdata: null,
+      showfilter: false
     };
   },
   created() {
@@ -51,8 +69,18 @@ export default {
     getdata() {
       this.$axios("api/profile/shopping").then(res => {
         // console.log(res);
-        this.seipeimg = res;
+        this.sweipeimg = res.data.swipeImgs;
+        this.entries = res.data.entries;
       });
+      this.$axios("api/profile/filter").then(res => {
+        this.filterdata = res.data;
+      });
+    },
+    showfilterv(isshow) {
+      this.showfilter = isshow;
+    },
+    updata(condation) {
+      console.log(condation);
     }
   }
 };
@@ -162,9 +190,10 @@ export default {
 }
 
 .fixedview {
-  width: 100%;
+  width: 100vw;
   position: fixed;
   top: 0px;
+  left: 0px;
   z-index: 999;
 }
 
