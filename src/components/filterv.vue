@@ -33,7 +33,12 @@
             <div v-for="(screen,index) in filterdata.screenBy" class="morefilter" :key="index">
               <p class="title">{{screen.title}}</p>
               <ul>
-                <li v-for="(item,i) in screen.data" :key="i">
+                <li
+                  v-for="(item,i) in screen.data"
+                  :key="i"
+                  :class="{'selected':item.select}"
+                  @click="selectScreen(item,screen)"
+                >
                   <img :src="item.icon" v-if="item.icon" />
                   <span>{{item.name}}</span>
                 </li>
@@ -41,8 +46,8 @@
             </div>
           </div>
           <div class="morefilter-btn">
-            <span class="morefilter-clear"> 清空</span>
-            <span class="morefilter-ok">确定</span>
+            <span class="morefilter-clear" :class="{'edit':edit}" @click="clearfilter">清空</span>
+            <span class="morefilter-ok" @click="filterok">确定</span>
           </div>
         </section>
       </div>
@@ -64,7 +69,49 @@ export default {
       isscreen: false
     };
   },
+  computed: {
+    edit() {
+      let edit = false;
+      this.filterdata.screenBy.forEach(screen => {
+        screen.data.forEach(item => {
+          if (item.select) {
+            edit = true;
+          }
+        });
+      });
+      return edit;
+    }
+  },
   methods: {
+    filterok() {
+      let screendata={
+        MPI:"",
+        offer:"",
+        per:""
+      }
+      let mpistr = "";
+      this.filterdata.screenBy.forEach(screen => {
+        screen.data.forEach((item, index) => {
+          if (item.select) {
+            if (screen.id !== "MPI") {
+              screendata[screen.id]=item.code
+            } else {
+              mpistr += item.code + ",";
+              screendata[screen.id]=mpistr
+            }
+          }
+        });
+      });
+      this.$emit("updata",screendata);
+      this.hidev();
+    },
+    clearfilter() {
+      this.filterdata.screenBy.forEach(screen => {
+        screen.data.forEach(item => {
+          item.select = false;
+        });
+      });
+    },
     filtersort(index) {
       this.currentfilter = index;
       switch (index) {
@@ -96,11 +143,20 @@ export default {
       this.isscreen = false;
       this.$emit("searchfixed", false);
     },
+
     slectsort(item, index) {
       this.currentsort = index;
       this.filterdata.navTab[0].name = this.filterdata.sortBy[index].name;
       this.hidev();
       this.$emit("updata", item.code);
+    },
+    selectScreen(item, screen) {
+      if (screen.id !== "MPI") {
+        screen.data.forEach(element => {
+          element.select = false;
+        });
+      }
+      item.select = !item.select;
     }
   }
 };

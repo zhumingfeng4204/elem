@@ -32,16 +32,21 @@
     </div>
     <div class="shoplist-title">推荐商家</div>
     <filterv :filterdata="filterdata" @searchfixed="showfilterv" @updata="updata"></filterv>
+    <div class="shoplist">
+      <indexshop v-for="(item,index) in restaurants" :key="index" :restaurant="item.restaurant"></indexshop>
+    </div>
   </div>
 </template>
 
 <script>
 import { Swipe, SwipeItem } from "mint-ui";
 import filterv from "../components/filterv";
+import indexshop from "../components/indexshop";
 export default {
   name: "home",
   components: {
-    filterv
+    filterv,
+    indexshop
   },
   computed: {
     address() {
@@ -59,7 +64,10 @@ export default {
       sweipeimg: [],
       entries: [],
       filterdata: null,
-      showfilter: false
+      showfilter: false,
+      page: 1,
+      size: 5,
+      restaurants: []
     };
   },
   created() {
@@ -74,6 +82,10 @@ export default {
       });
       this.$axios("api/profile/filter").then(res => {
         this.filterdata = res.data;
+      });
+      this.$axios.post("api/profile/restaurants/1/5").then(res => {
+        console.log(res);
+        this.restaurants = res.data;
       });
     },
     showfilterv(isshow) {
