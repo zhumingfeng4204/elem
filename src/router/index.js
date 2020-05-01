@@ -50,6 +50,11 @@ const routes = [
     name: "login",
     component: () => import("../vivews/login.vue")
   },
+  {
+    path: "/search",
+    name: "search",
+    component: () => import("../vivews/search.vue")
+  },
 
   // {
   //   path: "/about",

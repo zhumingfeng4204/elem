@@ -32,14 +32,25 @@
     </div>
     <div class="shoplist-title">推荐商家</div>
     <filterv :filterdata="filterdata" @searchfixed="showfilterv" @updata="updata"></filterv>
-    <div class="shoplist">
-      <indexshop v-for="(item,index) in restaurants" :key="index" :restaurant="item.restaurant"></indexshop>
-    </div>
+    <mt-loadmore
+      :top-method="loaddata"
+      :bottom-method="loadmore"
+      :bottom-all-loaded="allLoaded"
+      :auto-fill="false"
+      :bottomPullText="bottomPullText"
+      ref="loadmore"
+      touch-action:
+      none
+    >
+      <div class="shoplist">
+        <indexshop v-for="(item,index) in restaurants" :key="index" :restaurant="item.restaurant"></indexshop>
+      </div>
+    </mt-loadmore>
   </div>
 </template>
 
 <script>
-import { Swipe, SwipeItem } from "mint-ui";
+import { Swipe, SwipeItem, Loadmore } from "mint-ui";
 import filterv from "../components/filterv";
 import indexshop from "../components/indexshop";
 export default {
@@ -67,7 +78,10 @@ export default {
       showfilter: false,
       page: 1,
       size: 5,
-      restaurants: []
+      restaurants: [],
+      allLoaded: false,
+      bottomPullText: "上拉加载更多",
+      data:null
     };
   },
   created() {
@@ -87,12 +101,47 @@ export default {
         console.log(res);
         this.restaurants = res.data;
       });
+      this.loaddata();
     },
     showfilterv(isshow) {
       this.showfilter = isshow;
     },
     updata(condation) {
-      console.log(condation);
+      this.data=condation;
+      this.loaddata()
+    },
+    loaddata() {
+      this.page = 1;
+      this.allLoaded = false;
+      this.bottomPullText = "上拉加载更多";
+      this.$axios
+        .post(`api/profile/restaurants/${this.page}/${this.size}`,this.data)
+        .then(res => {
+          this.$refs.loadmore.onTopLoaded();
+          this.restaurants = res.data;
+        });
+    },
+    loadmore() {
+      if (!this.allLoaded) {
+        this.page++;
+        this.$axios
+          .post(`api/profile/restaurants/${this.page}/${this.size}`)
+          .then(res => {
+            this.$refs.loadmore.onBottomLoaded();
+            if (res.data.length > 0) {
+              res.data.forEach(element => {
+                this.restaurants.push(element);
+                if (res.data < this.size) {
+                  this.allLoaded = true;
+                  this.bottomPullText = "没有更多了";
+                }
+              });
+            } else {
+              this.allLoaded = true;
+              this.bottomPullText = "没有更多了";
+            }
+          });
+      }
     }
   }
 };
@@ -202,10 +251,9 @@ export default {
 }
 
 .fixedview {
-  width: 100vw;
+  width: 100%;
   position: fixed;
   top: 0px;
-  left: 0px;
   z-index: 999;
 }
 
