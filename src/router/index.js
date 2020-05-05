@@ -55,6 +55,29 @@ const routes = [
     name: "search",
     component: () => import("../vivews/search.vue")
   },
+  {
+    path: "/shop",
+    name: "shop",
+    redirect:"/goods",
+    component: () => import("../vivews/shops/shops"),
+    children:[
+      {
+        path: "/goods",
+        name: "goods",
+        component: () => import("../vivews/shops/goods")
+      },
+      {
+        path: "/seller",
+        name: "seller",
+        component: () => import("../vivews/shops/seller")
+      },
+      {
+        path: "/commits",
+        name: "commits",
+        component: () => import("../vivews/shops/commit")
+      },
+    ]
+  },
 
   // {
   //   path: "/about",
@@ -68,6 +91,7 @@ const routes = [
 ];
 
 const router = new VueRouter({
+  linkActiveClass:'active',
   mode: "history",
   base: process.env.BASE_URL,
   routes

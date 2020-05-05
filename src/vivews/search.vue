@@ -17,7 +17,7 @@
         </div>
       </div>
       <div v-else>
-        <seindex @click="shopclick" :data="result.restaurants"></seindex>
+        <seindex @click="$router.push('/shop')" :data="result.restaurants"></seindex>
         <seindex @click="shopclick" :data="result.words"></seindex>
       </div>
     </div>
