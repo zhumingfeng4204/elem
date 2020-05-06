@@ -39,7 +39,12 @@
               <strong>{{item.name}}</strong>
               <span>{{item.description}}</span>
             </div>
-            <div class="fooddetails" v-for="(food,i) in item.foods" :key="i">
+            <div
+              class="fooddetails"
+              @click="handlefood(food)"
+              v-for="(food,i) in item.foods"
+              :key="i"
+            >
               <img :src="food.image_path" alt />
               <section class="fooddetails-info">
                 <h4>{{food.name}}</h4>
@@ -55,7 +60,8 @@
         </ul>
       </div>
     </div>
-    <gouwuche :shopinfo=shopinfo></gouwuche>
+    <gouwuche :shopinfo="shopinfo"></gouwuche>
+    <food :food="selectfood" :isshow="showfood" @close="showfood=false"></food>
   </div>
 </template>
 
@@ -63,17 +69,20 @@
 import bscoll from "better-scroll";
 import jiajian from "../../components/shops/jiajian";
 import gouwuche from "../shops/shopcar";
+import food from "../shops/food";
 export default {
   name: "",
   props: {},
-  components: { jiajian, gouwuche },
+  components: { jiajian, gouwuche, food },
   data() {
     return {
       shopinfo: null,
       menuscroll: {},
       foodscroll: {},
       scrolly: 0,
-      listheight: []
+      listheight: [],
+      selectfood: null,
+      showfood: false
     };
   },
   created() {
@@ -92,6 +101,10 @@ export default {
     }
   },
   methods: {
+    handlefood(food) {
+      this.selectfood = food;
+      this.showfood = true;
+    },
     calculateh() {
       let foodlist = this.$refs.menuscrollfood.getElementsByClassName(
         "food-list-hook"
@@ -109,7 +122,7 @@ export default {
         click: true
       });
       this.foodscroll = new bscoll(this.$refs.menuscrollfood, {
-        probeType: 3,
+        probeType: 3
         // click: true
       });
       this.foodscroll.on("scroll", pos => {
@@ -128,7 +141,7 @@ export default {
             food.count = 0;
           });
         });
-   
+
         this.shopinfo = res.data;
         this.$nextTick(() => {
           this.initscroll();

@@ -1,13 +1,38 @@
 <template>
   <div class="shopcart">
+    <transition name="fade">
+      <div class="cartview-cartmask" v-if="showcar&&!isEmpty" @click.self="showcar=false">
+        <div class="cartview-cartbody">
+          <div class="cartview-cartheader">
+            <span>已选商品</span>
+            <button @click="clearf">
+              <i class="fa fa-trash-o"></i>
+              <span>清空</span>
+            </button>
+          </div>
+          <div class="entityList-cartbodyScroller">
+            <ul class="entityList-cartlist">
+              <li class="entityList-entityrow" v-for="(food,index) in selectfood" :key="index">
+                <h4>
+                  <span>{{food.name}}</span>
+                </h4>
+                <span class="entityList-entitytotal">{{food.activity.fixed_price}}</span>
+                <jiajian :food="food"></jiajian>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </transition>
     <div class="bottomNav-cartfooter" :class="{'bottomNav-carticon-empty':isEmpty}">
       <span class="bottomNav-carticon">
         <i class="fa fa-cart-plus"></i>
+        <span v-if="totacount" @click="showcar=!showcar">{{totacount}}</span>
       </span>
-      <div class="bottomNav-cartInfo">
+      <div class="bottomNav-cartInfo" @click="showcar=!showcar">
         <p class="bottomNav-carttotal">
           <span v-if="isEmpty">为选购商品</span>
-          <span v-else>￥0</span>
+          <span v-else>￥{{totaprice.toFixed(2)}}</span>
         </p>
         <p class="bottomNav-cartdelivery">另需配送费{{shopinfo.rst.float_delivery_feel}}元</p>
       </div>
@@ -20,21 +45,73 @@
 </template>
 
 <script>
+import jiajian from "../../components/shops/jiajian";
 export default {
   name: "shopcar",
+  components: {
+    jiajian
+  },
+  data() {
+    return {
+      totacount: 0,
+      totaprice: 0,
+      selectfood: [],
+      showcar: false
+    };
+  },
   computed: {
     isEmpty() {
       let empty = true;
+
+      //
+      // this.selectfood=0;
+      this.shopinfo.recommend.forEach(recommend => {
+        this.totacount = 0;
+        this.totaprice = 0;
+        this.selectfood = [];
+        recommend.items.forEach(item => {
+          if (item.count) {
+            empty = false;
+            this.totacount += item.count;
+            console.log(this.totacount);
+            this.totaprice += item.activity.fixed_price * item.count;
+            this.selectfood.push(item);
+          }
+        });
+      });
+
+      this.shopinfo.menu.forEach(menu => {
+        menu.foods.forEach(food => {
+          if (food.count) {
+            empty = false;
+            this.totacount += food.count;
+            this.totaprice += food.activity.fixed_price * food.count;
+            this.selectfood.push(food);
+          }
+        });
+      });
       return empty;
     }
   },
   props: {
     shopinfo: Object
   },
-  data() {
-    return {};
-  },
-  methods: {}
+  created() {},
+
+  methods: {
+    clearf() {
+      this.shopinfo.recommend.forEach(recommend => {
+        recommend.items.forEach(item => {
+          item.count = 0;
+        });
+      });
+      this.shopinfo.menu.forEach(recommend => {
+        recommend.foods.forEach(item => {
+          item.count = 0;
+        });
+      });
+    }
+  }
 };
 </script>
 

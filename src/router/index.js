@@ -72,8 +72,8 @@ const routes = [
         component: () => import("../vivews/shops/seller")
       },
       {
-        path: "/commits",
-        name: "commits",
+        path: "/commit",
+        name: "commit",
         component: () => import("../vivews/shops/commit")
       },
     ]

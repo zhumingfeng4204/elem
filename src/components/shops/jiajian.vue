@@ -24,7 +24,7 @@ export default {
       this.food.count--;
     },
     increasecount() {
-      console.log(this.food);
+      // console.log(this.food);
       this.food.count++;
     }
   }

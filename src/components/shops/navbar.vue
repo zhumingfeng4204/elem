@@ -8,7 +8,7 @@
       评价
       <i class="line"></i>
     </router-link>
-    <router-link to="/commits" class="nav-item">
+    <router-link to="/commit" class="nav-item">
       商家
       <i class="line"></i>
     </router-link>
