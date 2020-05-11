@@ -22,11 +22,13 @@
         <span>月售{{shopinfo.rst.recent_order_num}}单</span>
         <span>蜂鸟专送{{shopinfo.rst.order_lead_time}}分钟</span>
       </div>
-      <active :activties='shopinfo.rst.activities'></active>
+      <active :activties="shopinfo.rst.activities"></active>
       <p class="rst-promotion">公告：{{shopinfo.rst.promotion_info}}</p>
     </div>
     <navbar></navbar>
-    <router-view></router-view>
+    <keep-alive>
+      <router-view></router-view>
+    </keep-alive>
   </div>
 </template>
 

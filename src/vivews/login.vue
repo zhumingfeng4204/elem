@@ -63,8 +63,9 @@ export default {
         })
         .then(res => {
           console.log(res);
+          console.log(res.data.user._id);
           // 检验成功 设置登录状态并且跳转到/
-          localStorage.setItem("ele_login", true);
+          localStorage.setItem("ele_login", res.data.user._id);
           this.$router.push("/");
         })
         .catch(err => {

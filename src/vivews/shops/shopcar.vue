@@ -38,7 +38,7 @@
       </div>
       <button class="submit-btn">
         <span v-if="isEmpty">{{shopinfo.rst.float_minimum_order_amount}}元起送</span>
-        <span v-else>去结算</span>
+        <span @click="settlemet" v-else>去结算</span>
       </button>
     </div>
   </div>
@@ -99,6 +99,13 @@ export default {
   created() {},
 
   methods: {
+    settlemet() {
+      this.$store.dispatch("setloorderinfo", {
+        shopinfo: this.shopinfo.rst,
+        selectfoods: this.selectfood
+      });
+      this.$router.push("/settelemt");
+    },
     clearf() {
       this.shopinfo.recommend.forEach(recommend => {
         recommend.items.forEach(item => {

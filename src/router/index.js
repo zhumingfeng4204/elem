@@ -78,6 +78,21 @@ const routes = [
       },
     ]
   },
+  {
+    path: "/myadress",
+    name: "myadress",
+    component: () => import("../vivews/order/myadress")
+  },
+  {
+    path: "/addadress",
+    name: "addadress",
+    component: () => import("../vivews/order/addadress.vue")
+  },
+  {
+    path: "/settelemt",
+    name: "settelemt",
+    component: () => import("../vivews/order/settelemt.vue")
+  }
 
   // {
   //   path: "/about",
